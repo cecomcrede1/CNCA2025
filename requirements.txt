@@ -1,5 +1,5 @@
 pandas==2.2.3
-pandas-profiling==3.2.0ci_py311_2/pathspec_1679337288229/work
+pandas-profiling==3.2.0
 plotly @ file:///work/ci_py311/plotly_1676841625489/work
 requests @ file:///croot/requests_1707355572290/work
 requests-file @ file:///Users/ktietz/demo/mc3/conda-bld/requests-file_1629455781986/work
