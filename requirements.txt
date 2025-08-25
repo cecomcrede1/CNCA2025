@@ -1,7 +1,7 @@
 pandas==2.2.3
 pandas-profiling==3.2.0
-plotly @ file:///work/ci_py311/plotly_1676841625489/work
-requests @ file:///croot/requests_1707355572290/work
-requests-file @ file:///Users/ktietz/demo/mc3/conda-bld/requests-file_1629455781986/work
+plotly 
+requests
+requests-file 
 requests-oauthlib==2.0.0
-requests-toolbelt @ file:///croot/requests-toolbelt_1690874004362/workwork
+requests-toolbelt 
