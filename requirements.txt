@@ -1,7 +1,4 @@
-pandas==2.2.3
-pandas-profiling==3.2.0
-plotly 
-requests
-requests-file 
-requests-oauthlib==2.0.0
-requests-toolbelt 
+pandas==2.2.2
+plotly==5.23.0
+requests==2.32.3
+
