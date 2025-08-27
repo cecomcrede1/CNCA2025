@@ -113,7 +113,7 @@ def carregar_credenciais() -> Tuple[Dict, Dict, str, str]:
         return usuarios, escolas, installation_id, session_token
         
     except KeyError as e:
-        st.error(f"❌ Erro na configuração: {e}. Verifique o arquivo secrets.toml")
+        st.error(f" Erro na configuração: {e}. Verifique o arquivo secrets.toml")
         st.stop()
 
 # --------------------------------------------------------------------------
@@ -142,11 +142,14 @@ class PayloadBase:
         """Cria estrutura base do payload"""
         filtros_extras = filtros_extras or []
         
+        # Determinar dependência com base no código da entidade
+        dependencia = "MUNICIPAL" if self.entidade in st.secrets["users"] or (self.entidade not in st.secrets["users"] and self.entidade not in config.ESCOLAS_INDIGENAS) else "ESTADUAL"
+        print(dependencia)
         return {
             "CD_INDICADOR": indicadores_list,
             "agregado": self.entidade,
             "filtros": self._criar_filtros_base() + filtros_extras,
-            "filtrosAdicionais": [{"field": "DADOS.VL_FILTRO_REDE", "value": "MUNICIPAL", "operation": "equalTo"}],
+            "filtrosAdicionais": [{"field": "DADOS.VL_FILTRO_REDE", "value": dependencia, "operation": "equalTo"}],
             "ordenacao": [["NM_ENTIDADE", "ASC"]], 
             "nivelAbaixo": "0", 
             "collectionResultado": None, 
@@ -202,7 +205,7 @@ class APIClient:
             Resposta da API ou None em caso de erro
         """
         try:
-            with st.spinner("🔄 Carregando dados..."):
+            with st.spinner("Carregando dados..."):
                 response = requests.post(
                     _self.base_url, 
                     json=payload, 
@@ -213,15 +216,15 @@ class APIClient:
                 return response.json()
                 
         except requests.exceptions.Timeout:
-            st.error("⏱️ Tempo limite esgotado. Tente novamente.")
+            st.error("⏱Tempo limite esgotado. Tente novamente.")
         except requests.exceptions.ConnectionError:
-            st.error("🔌 Erro de conexão. Verifique sua internet.")
+            st.error("Erro de conexão. Verifique sua internet.")
         except requests.exceptions.HTTPError as e:
-            st.error(f"❌ Erro HTTP {response.status_code}: {e}")
+            st.error(f"Erro HTTP {response.status_code}: {e}")
         except requests.exceptions.RequestException as e:
-            st.error(f"❌ Erro na requisição: {e}")
+            st.error(f"Erro na requisição: {e}")
         except Exception as e:
-            st.error(f"❌ Erro inesperado: {e}")
+            st.error(f"Erro inesperado: {e}")
             
         return None
 
@@ -290,6 +293,7 @@ class GerenciadorAuth:
     
     def renderizar_login(self):
         """Renderiza interface de login"""
+        st.sidebar.image("painel_cecom.png")
         st.sidebar.title("🔐 Autenticação")
         
         with st.sidebar.form("login_form"):
@@ -301,10 +305,10 @@ class GerenciadorAuth:
                 if self._validar_credenciais(codigo_input, senha_input):
                     st.session_state.authenticated = True
                     st.session_state.codigo = codigo_input
-                    st.sidebar.success("✅ Login realizado com sucesso!")
+                    st.sidebar.success("Login realizado com sucesso!")
                     st.rerun()
                 else:
-                    st.sidebar.error("❌ Código ou senha inválidos.")
+                    st.sidebar.error("Código ou senha inválidos.")
     
     def _validar_credenciais(self, codigo: str, senha: str) -> bool:
         """Valida credenciais do usuário"""
@@ -312,24 +316,25 @@ class GerenciadorAuth:
     
     def renderizar_sidebar_logado(self):
         """Renderiza sidebar para usuário autenticado"""
-        with st.sidebar.expander("👤 Usuário Logado", expanded=True):
+        st.sidebar.image("painel_cecom.png")
+        with st.sidebar.expander("Usuário Logado", expanded=True):
             codigo = st.session_state.codigo
             tipo_usuario = self._determinar_tipo_usuario(codigo)
             
             st.success(f"**Código:** {codigo}")
             st.info(f"**Tipo:** {tipo_usuario}")
             
-            if st.button("🚪 Sair", use_container_width=True):
+            if st.button("Sair", use_container_width=True):
                 self._fazer_logout()
     
-    def _determinar_tipo_usuario(self, codigo: str) -> str:
+    def _determinar_tipo_usuario(self, codigo: str) -> dict:
         """Determina o tipo de usuário baseado no código"""
+
         if codigo in self.usuarios:
-            return "Município"
+            return "Municipal"
         elif codigo in config.ESCOLAS_INDIGENAS:
             return "Escola Indígena"
-        else:
-            return "Escola Municipal"
+
     
     def _fazer_logout(self):
         """Realiza logout do usuário"""
@@ -520,13 +525,32 @@ class PainelCNCA:
     def _renderizar_tela_login(self):
         """Renderiza tela de login"""
         self.auth_manager.renderizar_login()
-        st.info("🔑 Faça login para acessar o painel de resultados.")
+        st.info("Faça login para acessar o painel de resultados.")
+        st.header("Painel de Resultados – CECOM CREDE 01")
+        st.markdown("""
+                    Bem-vindo ao Painel de Resultados da CREDE 01.
+Este espaço foi desenvolvido pelo Cecom/CREDE 01 com o objetivo de disponibilizar, de forma clara e acessível, os principais dados das avaliações externas realizadas em nossa regional.
+
+Nosso propósito é oferecer aos municípios e escolas um compilado de informações que facilite a análise dos resultados e apoie a tomada de decisões pedagógicas no chão da escola.
+
+Aqui você encontrará:
+
+- Indicadores consolidados por município e escola;
+
+- Resultados por etapa, turma e componente curricular;
+
+- Evolução das aprendizagens e níveis de proficiência;
+
+- Ferramentas de visualização interativa para apoiar o acompanhamento e o planejamento.
+
+O painel foi pensado para aproximar os dados da prática pedagógica, fortalecendo o trabalho coletivo de gestores, professores e equipes escolares, em prol da melhoria da aprendizagem de nossos estudantes.""")
+        
     
     def _renderizar_painel_principal(self):
         """Renderiza painel principal"""
         self.auth_manager.renderizar_sidebar_logado()
         
-        st.title("📊 Painel de Resultados das Avaliações - CNCA 2025")
+        st.title("Painel de Resultados das Avaliações - CNCA 2025")
         st.sidebar.header("🔧 Filtros")
         
         # Seletores
@@ -549,7 +573,7 @@ class PainelCNCA:
         if dados_gerais or dados_habilidades:
             self._exibir_resultados(dados_gerais, dados_habilidades)
         else:
-            st.error("❌ Nenhum dado encontrado para os filtros selecionados.")
+            st.error("Nenhum dado encontrado para os filtros selecionados.")
     
     def _buscar_dados(self, entidade: str, componente: str, etapa: int) -> Tuple[List[pd.DataFrame], List[pd.DataFrame]]:
         """Busca dados da API para todos os ciclos"""
@@ -585,7 +609,7 @@ class PainelCNCA:
     
     def _exibir_resultados(self, dados_gerais: List[pd.DataFrame], dados_habilidades: List[pd.DataFrame]):
         """Exibe resultados consolidados"""
-        st.subheader("📈 Visão Consolidada dos Ciclos 1 e 2")
+        st.subheader("Visão Consolidada dos Ciclos 1 e 2")
         
         # Consolidar dados
         df_geral_consolidado = pd.concat(dados_gerais, ignore_index=True) if dados_gerais else pd.DataFrame()
@@ -610,13 +634,13 @@ class PainelCNCA:
         """Exibe métricas básicas do município/escola"""
         info = df.iloc[0]
         
-        st.metric("📍 Entidade", info['NM_ENTIDADE'])
+        st.metric("Entidade", info['NM_ENTIDADE'])
         
         col1, col2 = st.columns([0.3, 0.7])
         with col1:
-            st.metric("🎓 Etapa", info['VL_FILTRO_ETAPA'])
+            st.metric("Etapa", info['VL_FILTRO_ETAPA'])
         with col2:
-            st.metric("📚 Componente", info['VL_FILTRO_DISCIPLINA'])
+            st.metric("Componente", info['VL_FILTRO_DISCIPLINA'])
     
     def _exibir_tabelas_dados(self, df_geral: pd.DataFrame, df_habilidades: pd.DataFrame):
         """Exibe tabelas de dados"""
@@ -624,17 +648,17 @@ class PainelCNCA:
         
         with col1:
             if not df_geral.empty:
-                st.write("**📊 Dados Gerais Consolidados**")
+                st.write("**Dados Gerais Consolidados**")
                 st.dataframe(df_geral, use_container_width=True, hide_index=True)
         
         with col2:
             if not df_habilidades.empty:
-                st.write("**🎯 Dados de Habilidades Consolidados**")
+                st.write("**Dados de Habilidades Consolidados**")
                 st.dataframe(df_habilidades, use_container_width=True, hide_index=True)
     
     def _exibir_graficos(self, df_geral: pd.DataFrame, df_habilidades: pd.DataFrame):
         """Exibe gráficos principais"""
-        st.subheader("📈 Resultados")
+        st.subheader("Resultados")
         st.divider()
         
         col1, col2 = st.columns([0.3, 0.7])
@@ -644,7 +668,7 @@ class PainelCNCA:
                 # Calcular médias por ciclo
                 medias = df_geral.groupby('Ciclo')['TX_ACERTOS'].mean()
                 
-                st.markdown("##### 🎯 Proficiência Média")
+                st.markdown("##### Proficiência Média")
                 for ciclo in ["1º Ciclo", "2º Ciclo"]:
                     if ciclo in medias.index:
                         delta = medias[ciclo] - medias.get("1º Ciclo", 0) if ciclo == "2º Ciclo" else None
@@ -656,7 +680,7 @@ class PainelCNCA:
         
         with col2:
             if not df_habilidades.empty:
-                st.markdown("##### 🎯 Taxa de Acertos por Habilidades")
+                st.markdown("##### Taxa de Acertos por Habilidades")
                 fig_habilidades = self.gerador_graficos.criar_grafico_habilidades(df_habilidades)
                 if fig_habilidades:
                     st.plotly_chart(fig_habilidades, use_container_width=True)
@@ -668,7 +692,7 @@ class PainelCNCA:
         # Gráfico de evolução
         if not df_geral.empty:
             st.divider()
-            st.markdown("##### 📊 Distribuição dos Estudantes por Nível de Aprendizagem")
+            st.markdown("##### Distribuição dos Estudantes por Nível de Aprendizagem")
             
             # Debug: mostrar dados disponíveis
             if st.checkbox("🔍 Mostrar dados dos níveis (debug)", key="debug_niveis"):
@@ -682,7 +706,7 @@ class PainelCNCA:
                 st.plotly_chart(fig_evolucao, use_container_width=True)
                 
                 # Adicionar explicação dos níveis
-                with st.expander("ℹ️ Entenda os Níveis de Aprendizagem", expanded=False):
+                with st.expander("Entenda os Níveis de Aprendizagem", expanded=False):
                     col1, col2, col3 = st.columns(3)
                     
                     with col1:
@@ -703,11 +727,11 @@ class PainelCNCA:
                         - Este é o nível de aprendizagem esperado, onde os estudantes desenvolveram as habilidades adequadas. Para estes, devem ser realizadas ações para aprofundamento e ampliação das aprendizagens.
                         """)
             else:
-                st.warning("⚠️ Não foi possível gerar o gráfico de distribuição. Verifique se os dados dos níveis estão disponíveis.")
+                st.warning("Não foi possível gerar o gráfico de distribuição. Verifique se os dados dos níveis estão disponíveis.")
     
     def _exibir_participacao(self, df_geral: pd.DataFrame):
         """Exibe gráficos de participação"""
-        st.markdown("##### 👥 Participação dos Estudantes")
+        st.markdown("##### Participação dos Estudantes")
         
         col1, col2 = st.columns(2)
         cores = {"1º Ciclo": "#98FB98", "2º Ciclo": "#228B22"}
@@ -737,7 +761,7 @@ class PainelCNCA:
     def _exibir_analise_top5(self, df_habilidades: pd.DataFrame):
         """Exibe análise das 5 melhores e piores habilidades"""
         st.divider()
-        st.subheader("🏆 Top 5 Habilidades por Desempenho")
+        st.subheader("Top 5 Habilidades por Desempenho")
         
         for ciclo in ["1º Ciclo", "2º Ciclo"]:
             st.markdown(f"##### {ciclo}")
@@ -747,13 +771,13 @@ class PainelCNCA:
                 col1, col2 = st.columns(2)
                 
                 with col1:
-                    st.markdown("**🥇 Maiores Desempenhos**")
+                    st.markdown("**Maiores Desempenhos**")
                     top_5 = df_ciclo.nlargest(5, 'TX_ACERTO')[['CD_HABILIDADE', 'DC_HABILIDADE', 'TX_ACERTO']]
                     top_5['TX_ACERTO'] = top_5['TX_ACERTO'].round(1).astype(str) + '%'
                     st.dataframe(top_5, hide_index=True, use_container_width=True)
                     
                 with col2:
-                    st.markdown("**🔻 Menores Desempenhos**")
+                    st.markdown("**Menores Desempenhos**")
                     bottom_5 = df_ciclo.nsmallest(5, 'TX_ACERTO')[['CD_HABILIDADE', 'DC_HABILIDADE', 'TX_ACERTO']]
                     bottom_5['TX_ACERTO'] = bottom_5['TX_ACERTO'].round(1).astype(str) + '%'
                     st.dataframe(bottom_5, hide_index=True, use_container_width=True)
@@ -768,7 +792,7 @@ def main():
         painel = PainelCNCA()
         painel.executar()
     except Exception as e:
-        st.error(f"❌ Erro na aplicação: {e}")
+        st.error(f"Erro na aplicação: {e}")
         logging.error(f"Erro na aplicação: {e}")
 
 if __name__ == "__main__":
