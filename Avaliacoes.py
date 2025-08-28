@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------------
-# PAINEL DE RESULTADOS CNCA 2025 - VERSÃO MELHORADA
+# PAINEL DE RESULTADOS CECOM CREDE 01 2025 - VERSÃO MELHORADA
 # --------------------------------------------------------------------------
 
 import streamlit as st
@@ -20,8 +20,8 @@ from pathlib import Path
 @dataclass
 class ConfigApp:
     """Classe para centralizar configurações da aplicação"""
-    PAGE_TITLE: str = "CNCA 2025 - Painel de Resultados"
-    PAGE_ICON: str = "CNCA.png"
+    PAGE_TITLE: str = "CECOM/CREDE 01 - Painel de Resultados"
+    PAGE_ICON: str = "painel_cecom.png"
     LAYOUT: str = "wide"
     
     # URLs e endpoints
@@ -501,7 +501,7 @@ class GeradorGraficos:
 # 8. INTERFACE PRINCIPAL
 # --------------------------------------------------------------------------
 
-class PainelCNCA:
+class PainelResultados:
     """Classe principal do painel"""
     
     def __init__(self):
@@ -527,7 +527,7 @@ class PainelCNCA:
         self.auth_manager.renderizar_login()
         "---"
         st.sidebar.info("Faça login para acessar o painel de resultados.")
-        st.header("Painel de Resultados – CECOM CREDE 01")
+        st.header("Painel de Resultados – CECOM/CREDE 01")
         "---"
         st.markdown("""
                     Bem-vindo ao Painel de Resultados da CREDE 01.
@@ -552,7 +552,7 @@ O painel foi pensado para aproximar os dados da prática pedagógica, fortalecen
         """Renderiza painel principal"""
         self.auth_manager.renderizar_sidebar_logado()
         
-        st.title("Painel de Resultados das Avaliações - CNCA 2025")
+        st.title("Painel de Resultados das Avaliações - CECOM/CREDE 01")
         st.sidebar.header("🔧 Filtros")
         
         # Seletores
@@ -650,11 +650,13 @@ O painel foi pensado para aproximar os dados da prática pedagógica, fortalecen
         
         with col1:
             if not df_geral.empty:
+                st.expander("🔍 Mostrar dados gerais", expanded=False)
                 st.write("**Dados Gerais Consolidados**")
                 st.dataframe(df_geral, use_container_width=True, hide_index=True)
         
         with col2:
             if not df_habilidades.empty:
+                st.expander("🔍 Mostrar dados de habilidades", expanded=False)
                 st.write("**Dados de Habilidades Consolidados**")
                 st.dataframe(df_habilidades, use_container_width=True, hide_index=True)
     
@@ -791,7 +793,7 @@ O painel foi pensado para aproximar os dados da prática pedagógica, fortalecen
 def main():
     """Função principal da aplicação"""
     try:
-        painel = PainelCNCA()
+        painel = PainelResultados()
         painel.executar()
     except Exception as e:
         st.error(f"Erro na aplicação: {e}")
