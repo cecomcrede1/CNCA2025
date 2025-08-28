@@ -525,8 +525,10 @@ class PainelCNCA:
     def _renderizar_tela_login(self):
         """Renderiza tela de login"""
         self.auth_manager.renderizar_login()
-        st.info("Faça login para acessar o painel de resultados.")
+        "---"
+        st.sidebar.info("Faça login para acessar o painel de resultados.")
         st.header("Painel de Resultados – CECOM CREDE 01")
+        "---"
         st.markdown("""
                     Bem-vindo ao Painel de Resultados da CREDE 01.
 Este espaço foi desenvolvido pelo Cecom/CREDE 01 com o objetivo de disponibilizar, de forma clara e acessível, os principais dados das avaliações externas realizadas em nossa regional.
