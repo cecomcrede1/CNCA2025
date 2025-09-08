@@ -356,9 +356,9 @@ class GeradorGraficos:
         if df_habilidades.empty:
             return None
         # Ordenar os ciclos na ordem desejada
-        df_habilidades['Ciclo'] = pd.Categorical(df_habilidades['Ciclo'], 
-                                               categories=["2º Ciclo", "1º Ciclo"],
-                                               ordered=True)
+        # df_habilidades['Ciclo'] = pd.Categorical(df_habilidades['Ciclo'], 
+        #                                        categories=["2º Ciclo", "1º Ciclo"],
+        #                                        ordered=True)
         fig = px.bar(
             df_habilidades,
             x='DC_HABILIDADE',
