@@ -363,7 +363,7 @@ class GeradorGraficos:
             title='Taxa de Acertos por Habilidades por Ciclo',
             text=df_habilidades['TX_ACERTO'].round(1),
             color='Ciclo',
-            color_discrete_map={"1º Ciclo": "#4caf50", "2º Ciclo": "#228B22"},
+            color_discrete_map={"1º Ciclo": "#20ac52", "2º Ciclo": "#228B22"},
             labels={
                 'TX_ACERTO': 'Taxa de Acertos (%)', 
                 'Ciclo': 'Ciclo de Avaliação',
@@ -738,7 +738,7 @@ O painel foi pensado para aproximar os dados da prática pedagógica, fortalecen
         st.markdown("##### Participação dos Estudantes")
         
         col1, col2 = st.columns(2)
-        cores = {"1º Ciclo": "#4caf50", "2º Ciclo": "#228B22"}
+        cores = {"1º Ciclo": "#20ac52", "2º Ciclo": "#228B22"}
         
         for i, ciclo in enumerate(["1º Ciclo", "2º Ciclo"]):
             df_ciclo = df_geral[df_geral['Ciclo'] == ciclo]
