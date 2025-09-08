@@ -405,9 +405,9 @@ class GeradorGraficos:
                 'axis': {'range': [0, 100]},
                 'bar': {'color': cor},
                 'steps': [
-                    {'range': [0, 80], 'color': "#c1e8cb"},
-                    {'range': [80, 90], 'color': "#ffc400"},
-                    {'range': [90, 100], 'color': "#ff0022"}
+                    {'range': [0, 80], 'color': "#d7f5df"},
+                    {'range': [80, 90], 'color': "#f5eed7"},
+                    {'range': [90, 100], 'color': "#f5d7d7"}
                 ],
                 'threshold': {
                     'line': {'color': "red", 'width': 4},
