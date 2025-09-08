@@ -467,7 +467,7 @@ class GeradorGraficos:
                     textposition='inside',
                     hovertemplate=f"<b>{nome}</b><br>" +
                                 "Ciclo: %{y}<br>" +
-                                "Quantidade de Estudantes: %{x:.1f}%<br>" +
+                                "Quantidade de Estudantes: %{x:.1f}<br>" +
                                 "<extra></extra>"
                 ))
                 
