@@ -410,7 +410,7 @@ class GeradorGraficos:
                     {'range': [90, 100], 'color': "#f5d7d7"}
                 ],
                 'threshold': {
-                    'line': {'color': "red", 'width': 4},
+                    'line': {'color': "#454545", 'width': 4},
                     'thickness': 0.85,
                     'value': 100
                 }
