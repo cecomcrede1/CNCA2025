@@ -405,7 +405,7 @@ class GeradorGraficos:
                 'axis': {'range': [0, 100]},
                 'bar': {'color': cor},
                 'steps': [
-                    {'range': [0, 80], 'color': "#00ff8c"},
+                    {'range': [0, 80], 'color': "##c1e8cb"},
                     {'range': [80, 90], 'color': "#ffc400"},
                     {'range': [90, 100], 'color': "#ff0022"}
                 ],
